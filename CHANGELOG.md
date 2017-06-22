@@ -694,38 +694,22 @@ filename | sha256 hash
         * requests from a node for a TLS serving certificate for itself are approved if the CSR creator has `create` permission on the `certificatesigningrequests` resource and the `selfnodeserver` subresource in the `certificates.k8s.io` API group
 * Support updating storageclasses in etcd to storage.k8s.io/v1. You must do this prior to upgrading to 1.8. ([#46116](https://github.com/kubernetes/kubernetes/pull/46116), [@ncdc](https://github.com/ncdc))
 * The namespace API object no longer supports the deletecollection operation. ([#46407](https://github.com/kubernetes/kubernetes/pull/46407), [@liggitt](https://github.com/liggitt))
-* NetworkPolicy has been moved from `extensions/v1beta1` to the new ([#39164](https://github.com/kubernetes/kubernetes/pull/39164), [@danwinship](https://github.com/danwinship))
-    * `networking.k8s.io/v1` API group. The structure remains unchanged from
-    * the beta1 API.
-    * The `net.beta.kubernetes.io/network-policy` annotation on Namespaces
-    * to opt in to isolation has been removed. Instead, isolation is now
-    * determined at a per-pod level, with pods being isolated if there is
-    * any NetworkPolicy whose spec.podSelector targets them. Pods that are
-    * targeted by NetworkPolicies accept traffic that is accepted by any of
-    * the NetworkPolicies (and nothing else), and pods that are not targeted
-    * by any NetworkPolicy accept all traffic by default.
+* NetworkPolicy has been moved from `extensions/v1beta1` to the new ([#39164](https://github.com/kubernetes/kubernetes/pull/39164), [@danwinship](https://github.com/danwinship)) `networking.k8s.io/v1` API group. The structure remains unchanged from the beta1 API.
+    * The `net.beta.kubernetes.io/network-policy` annotation on Namespaces to opt in to isolation has been removed. Instead, isolation is now determined at a per-pod level, with pods being isolated if there is any NetworkPolicy whose spec.podSelector targets them. Pods that are targeted by NetworkPolicies accept traffic that is accepted by any of the NetworkPolicies (and nothing else), and pods that are not targeted by any NetworkPolicy accept all traffic by default.
     * Action Required:
-    * When upgrading to Kubernetes 1.7 (and a network plugin that supports
-    * the new NetworkPolicy v1 semantics), to ensure full behavioral
-    * compatibility with v1beta1:
-    *     1. In Namespaces that previously had the "DefaultDeny" annotation,
-    *        you can create equivalent v1 semantics by creating a
-    *        NetworkPolicy that matches all pods but does not allow any
-    *        traffic:
-    *            kind: NetworkPolicy
-    *            apiVersion: networking.k8s.io/v1
-    *            metadata:
-    *              name: default-deny
-    *            spec:
-    *              podSelector:
-    *        This will ensure that pods that aren't matched by any other
-    *        NetworkPolicy will continue to be fully-isolated, as they were
-    *        before.
-    *     2. In Namespaces that previously did not have the "DefaultDeny"
-    *        annotation, you should delete any existing NetworkPolicy
-    *        objects. These would have had no effect before, but with v1
-    *        semantics they might cause some traffic to be blocked that you
-    *        didn't intend to be blocked.
+        * When upgrading to Kubernetes 1.7 (and a network plugin that supports the new NetworkPolicy v1 semantics), to ensure full behavioral compatibility with v1beta1:
+          1. In Namespaces that previously had the "DefaultDeny" annotation, you can create equivalent v1 semantics by creating a NetworkPolicy that matches all pods but does not allow any traffic:
+          ```yaml
+          kind: NetworkPolicy
+          apiVersion: networking.k8s.io/v1
+          metadata:
+            name: default-deny
+          spec:
+            podSelector:
+          ```
+          This will ensure that pods that aren't matched by any other NetworkPolicy will continue to be fully-isolated, as they were before.
+
+          2. In Namespaces that previously did not have the "DefaultDeny" annotation, you should delete any existing NetworkPolicy objects. These would have had no effect before, but with v1 semantics they might cause some traffic to be blocked that you didn't intend to be blocked.
 
 ### Other notable changes
 
@@ -751,7 +735,7 @@ filename | sha256 hash
 * servicecontroller: Fix node selection logic on initial LB creation ([#45773](https://github.com/kubernetes/kubernetes/pull/45773), [@justinsb](https://github.com/justinsb))
 * Fix iSCSI iSER mounting. ([#47281](https://github.com/kubernetes/kubernetes/pull/47281), [@mtanino](https://github.com/mtanino))
 * StorageOS Volume Driver ([#42156](https://github.com/kubernetes/kubernetes/pull/42156), [@croomes](https://github.com/croomes))
-    * [StorageOS](http://www.storageos.com) can be used as a storage provider for Kubernetes.  With StorageOS, capacity from local or attached storage is pooled across the cluster, providing converged infrastructure for cloud-native applications. 
+    * [StorageOS](http://www.storageos.com) can be used as a storage provider for Kubernetes.  With StorageOS, capacity from local or attached storage is pooled across the cluster, providing converged infrastructure for cloud-native applications.
 * CRI has been moved to package `pkg/kubelet/apis/cri/v1alpha1/runtime`. ([#47113](https://github.com/kubernetes/kubernetes/pull/47113), [@feiskyer](https://github.com/feiskyer))
 * Make gcp auth provider not to override the Auth header if it's already exits ([#45575](https://github.com/kubernetes/kubernetes/pull/45575), [@wanghaoran1988](https://github.com/wanghaoran1988))
 * Allow pods to opt out of PodPreset mutation via an annotation on the pod. ([#44965](https://github.com/kubernetes/kubernetes/pull/44965), [@jpeeler](https://github.com/jpeeler))
@@ -773,7 +757,7 @@ filename | sha256 hash
 * federation: Add admission controller for policy-based placement ([#44786](https://github.com/kubernetes/kubernetes/pull/44786), [@tsandall](https://github.com/tsandall))
 * Get command uses OpenAPI schema to enhance display for a resource if run with flag 'use-openapi-print-columns'.  ([#46235](https://github.com/kubernetes/kubernetes/pull/46235), [@droot](https://github.com/droot))
     * An example command:
-    * kubectl get pods --use-openapi-print-columns 
+    * kubectl get pods --use-openapi-print-columns
 * add gzip compression to GET and LIST requests ([#45666](https://github.com/kubernetes/kubernetes/pull/45666), [@ilackarms](https://github.com/ilackarms))
 * Fix the bug where container cannot run as root when SecurityContext.RunAsNonRoot is false. ([#47009](https://github.com/kubernetes/kubernetes/pull/47009), [@yujuhong](https://github.com/yujuhong))
 * Fixes a bug with cAdvisorPort in the KubeletConfiguration that prevented setting it to 0, which is in fact a valid option, as noted in issue [#11710](https://github.com/kubernetes/kubernetes/pull/11710). ([#46876](https://github.com/kubernetes/kubernetes/pull/46876), [@mtaufen](https://github.com/mtaufen))
@@ -1014,7 +998,7 @@ filename | sha256 hash
 * servicecontroller: Fix node selection logic on initial LB creation ([#45773](https://github.com/kubernetes/kubernetes/pull/45773), [@justinsb](https://github.com/justinsb))
 * Fix iSCSI iSER mounting. ([#47281](https://github.com/kubernetes/kubernetes/pull/47281), [@mtanino](https://github.com/mtanino))
 * StorageOS Volume Driver ([#42156](https://github.com/kubernetes/kubernetes/pull/42156), [@croomes](https://github.com/croomes))
-    * [StorageOS](http://www.storageos.com) can be used as a storage provider for Kubernetes.  With StorageOS, capacity from local or attached storage is pooled across the cluster, providing converged infrastructure for cloud-native applications. 
+    * [StorageOS](http://www.storageos.com) can be used as a storage provider for Kubernetes.  With StorageOS, capacity from local or attached storage is pooled across the cluster, providing converged infrastructure for cloud-native applications.
 * CRI has been moved to package `pkg/kubelet/apis/cri/v1alpha1/runtime`. ([#47113](https://github.com/kubernetes/kubernetes/pull/47113), [@feiskyer](https://github.com/feiskyer))
 * Make gcp auth provider not to override the Auth header if it's already exits ([#45575](https://github.com/kubernetes/kubernetes/pull/45575), [@wanghaoran1988](https://github.com/wanghaoran1988))
 * Allow pods to opt out of PodPreset mutation via an annotation on the pod. ([#44965](https://github.com/kubernetes/kubernetes/pull/44965), [@jpeeler](https://github.com/jpeeler))
@@ -1231,7 +1215,7 @@ filename | sha256 hash
 * federation: Add admission controller for policy-based placement ([#44786](https://github.com/kubernetes/kubernetes/pull/44786), [@tsandall](https://github.com/tsandall))
 * Get command uses OpenAPI schema to enhance display for a resource if run with flag 'use-openapi-print-columns'.  ([#46235](https://github.com/kubernetes/kubernetes/pull/46235), [@droot](https://github.com/droot))
     * An example command:
-    * kubectl get pods --use-openapi-print-columns 
+    * kubectl get pods --use-openapi-print-columns
 * add gzip compression to GET and LIST requests ([#45666](https://github.com/kubernetes/kubernetes/pull/45666), [@ilackarms](https://github.com/ilackarms))
 * Fix the bug where container cannot run as root when SecurityContext.RunAsNonRoot is false. ([#47009](https://github.com/kubernetes/kubernetes/pull/47009), [@yujuhong](https://github.com/yujuhong))
 * Fixes a bug with cAdvisorPort in the KubeletConfiguration that prevented setting it to 0, which is in fact a valid option, as noted in issue [#11710](https://github.com/kubernetes/kubernetes/pull/11710). ([#46876](https://github.com/kubernetes/kubernetes/pull/46876), [@mtaufen](https://github.com/mtaufen))
@@ -1694,7 +1678,7 @@ filename | sha256 hash
     * The new metrics are:
     *   cloudprovider_gce_api_request_duration_seconds{request, region, zone}
     *   cloudprovider_gce_api_request_errors{request, region, zone}
- 
+
     * `request` is the specific function that is used.
     * `region` is the target region (Will be "<n/a>" if not applicable)
     * `zone` is the target zone (Will be "<n/a>" if not applicable)
@@ -5003,7 +4987,7 @@ filename | sha256 hash
   Changelog (vs 55-8872-18-0)
     * Cherry-pick runc PR#608: Eliminate redundant parsing of mountinfo
     * Updated kubernetes to v1.4.5
-    * Fixed a bug in e2fsprogs that caused mke2fs to take a very long time. Upstream fix: http://git.kernel.org/cgit/fs/ext2/e2fsprogs.git/commit/?h=next&id=d33e690fe7a6cbeb51349d9f2c7fb16a6ebec9c2 
+    * Fixed a bug in e2fsprogs that caused mke2fs to take a very long time. Upstream fix: http://git.kernel.org/cgit/fs/ext2/e2fsprogs.git/commit/?h=next&id=d33e690fe7a6cbeb51349d9f2c7fb16a6ebec9c2
 ```
 
 * Fix fetching pids running in a cgroup, which caused problems with OOM score adjustments & setting the /system cgroup ("misc" in the summary API). ([#36614](https://github.com/kubernetes/kubernetes/pull/36614), [@timstclair](https://github.com/timstclair))
